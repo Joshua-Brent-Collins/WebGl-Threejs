@@ -12,6 +12,17 @@
     <script src=three.min.js></script>
     <script type="text/javascript">
 
+      colorSpace = {
+
+          BLUE : 0x0000FF,
+          RED : 0xFF0000,
+          YELLOW: 0xFFFF00,
+          GREEN: 0x00FF00
+
+      }
+
+
+
         var ambLight = new THREE.AmbientLight(0x404040);
         var skyLight = new THREE.PointLight(0x404040,2,0);
         var skyLight2 = new THREE.PointLight(0x404040,2,0);
@@ -29,7 +40,7 @@
 
         function generateNodes(count) {
             geometry = new THREE.DodecahedronGeometry( 2, 0);
-            material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading} );
+            material = new THREE.MeshLambertMaterial( {color: colorSpace.RED, shading: THREE.SmoothShading} );
             for (var x = 0; x<count; x++){
                 nodes.push(new THREE.Mesh( geometry, material ));
             }
@@ -47,7 +58,7 @@
                 var midY = (objs[index].position.y + objs[next].position.y)/2;
 
                 geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=distance);
-                material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading});
+                material = new THREE.MeshLambertMaterial( {color: colorSpace.BLUE, shading: THREE.SmoothShading});
                 connections.push(new THREE.Mesh( geometry, material ));
 
                 var theta = Math.acos((objs[index].position.x - midX)/(distance/2));
@@ -84,8 +95,11 @@
         nodes[0].translateX(25);
         nodes[0].translateY(-10);
         nodes[1].translateX(-10);
+        nodes[1].translateY(15);
         nodes[2].translateX(10);
-        nodes[3].translateX(25);
+        nodes[2].translateY(-10);
+        nodes[3].translateX(-25);
+        nodes[3].translateY(-10);
 
         generateConnections(nodes);
 

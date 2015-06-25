@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Visualizer</title>
+        <style>
+            body{margin: 0;}
+            <canvas width=100% height=100%></canvas>
+        </style>
+    </head>
+    <body>
+    <script src=three.min.js></script>
+    <script type="text/javascript">
+
+        var ambLight = new THREE.AmbientLight(0x404040);
+        var skyLight = new THREE.PointLight(0x404040,2,0);
+        var skyLight2 = new THREE.PointLight(0x404040,2,0);
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight, 0.1,1000.0);
+        var renderer = new THREE.WebGLRenderer();
+
+        renderer.setSize(window.innerWidth,window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        var geometry = new THREE.OctahedronGeometry( 2, 0);
+        var material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading} );
+
+        var nodes = [];
+
+        for (var x = 0; x<4; x++){
+            nodes.push(new THREE.Mesh( geometry, material ));
+        }
+
+
+
+        skyLight.position.set(-10,10,20);
+        skyLight2.position.set(10,10,20);
+
+        scene.add(ambLight);
+        scene.add(skyLight);
+        scene.add(skyLight2);
+
+        for(index in nodes) {
+            scene.add(nodes[index])
+        }
+
+        nodes[0].translateX(-10);
+        nodes[1].translateX(0);
+        nodes[2].translateX(5);
+        nodes[3].translateX(10);
+
+        camera.position.z = 30;
+
+        function drawScene(){
+        for(index in nodes) {
+            nodes[index].rotation.x += 0.05;
+            nodes[index].rotation.y += .025;
+        }
+            requestAnimationFrame(drawScene);
+            renderer.render(scene,camera);
+        }
+
+        drawScene();
+    </script>
+    </body>
+</html>

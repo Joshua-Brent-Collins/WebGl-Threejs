@@ -39,13 +39,19 @@
         //call last after all translations
         function generateConnections(objs) {
             for (var index = 0; index < (objs.length)-1; index++){
-                geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=5);
+                var next = index + 1;
+                var deltaX = objs[index].position.x-objs[next].position.x
+                var deltaY = objs[index].position.y-objs[next].position.y
+
+                var distance = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
+
+                geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=distance);
                 material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading});
                 connections.push(new THREE.Mesh( geometry, material ));
-                scene.add(connections[index]);
-                var next = index + 1;
+
                 console.log(next);
                 connections[index].position.set((objs[index].position.x + objs[next].position.x)/2,(objs[index].position.y + objs[next].position.y)/2, objs[index].position.z);
+                scene.add(connections[index]);
             }
             geometry = null;
             material = null;

@@ -40,21 +40,26 @@
         function generateConnections(objs) {
             for (var index = 0; index < (objs.length)-1; index++){
                 var next = index + 1;
-                var deltaX = objs[index].position.x-objs[next].position.x
-                var deltaY = objs[index].position.y-objs[next].position.y
+                var deltaX = objs[index].position.x-objs[next].position.x;
+                var deltaY = objs[index].position.y-objs[next].position.y;
                 var distance = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
                 var midX = (objs[index].position.x + objs[next].position.x)/2;
                 var midY = (objs[index].position.y + objs[next].position.y)/2;
-
-                var theta = Math.acos((objs[index].position.x - midX)/(distance/2));
-                var mu = (3.1415/2) - theta;
 
                 geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=distance);
                 material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading});
                 connections.push(new THREE.Mesh( geometry, material ));
 
+                var theta = Math.acos((objs[index].position.x - midX)/(distance/2));
+                var mu = (3.1415/2) - theta;
+
+                if(objs[index].position.y >= 0 && objs[index].position.x <=0 || (objs[index].position.y >= 0 && objs[index].position.x >= 0) ) {
+                    connections[index].rotation.z -= mu;
+                } else {
+                    connections[index].rotation.z += mu;
+                }
+
                 connections[index].position.set(midX,midY, objs[index].position.z);
-                connections[index].rotation.z = -mu;
                 scene.add(connections[index]);
             }
             geometry = null;
@@ -76,8 +81,8 @@
         }
 
 
-        nodes[0].translateX(20);
-        nodes[0].translateY(5);
+        nodes[0].translateX(25);
+        nodes[0].translateY(-10);
         nodes[1].translateX(-10);
         nodes[2].translateX(10);
         nodes[3].translateX(25);

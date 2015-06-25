@@ -22,15 +22,30 @@
         renderer.setSize(window.innerWidth,window.innerHeight);
         document.body.appendChild(renderer.domElement);
 
-        var geometry = new THREE.OctahedronGeometry( 2, 0);
-        var material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading} );
-
+        var geometry = null;
+        var material = null;
         var nodes = [];
+        var connections = [];
 
-        for (var x = 0; x<4; x++){
-            nodes.push(new THREE.Mesh( geometry, material ));
+        function generateNodes(count) {
+            geometry = new THREE.DodecahedronGeometry( 2, 0);
+            material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading} );
+            for (var x = 0; x<count; x++){
+                nodes.push(new THREE.Mesh( geometry, material ));
+            }
+            geometry = null;
+            material = null;
         }
 
+        function generateConnections(count) {
+            geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=5);
+            material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading});
+            for (var x = 0; x<count; x++){
+                connections.push(new THREE.Mesh( geometry, material ));
+            }
+            geometry = null;
+            material = null;
+        }
 
 
         skyLight.position.set(-10,10,20);
@@ -40,26 +55,29 @@
         scene.add(skyLight);
         scene.add(skyLight2);
 
+        generateConnections(4);
+        scene.add(connections[0]);
+        generateNodes(4);
         for(index in nodes) {
             scene.add(nodes[index])
         }
 
-        nodes[0].translateX(-10);
-        nodes[1].translateX(0);
-        nodes[2].translateX(5);
-        nodes[3].translateX(10);
+        nodes[0].translateX(-25);
+        nodes[1].translateX(-10);
+        nodes[2].translateX(10);
+        nodes[3].translateX(25);
+        connections[0].translateY(10);
 
         camera.position.z = 30;
 
         function drawScene(){
-        for(index in nodes) {
-            nodes[index].rotation.x += 0.05;
-            nodes[index].rotation.y += .025;
-        }
+            for(index in nodes) {
+                nodes[index].rotation.x += 0.05;
+                nodes[index].rotation.y += .025;
+            }
             requestAnimationFrame(drawScene);
             renderer.render(scene,camera);
         }
-
         drawScene();
     </script>
     </body>

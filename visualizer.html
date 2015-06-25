@@ -36,16 +36,21 @@
             geometry = null;
             material = null;
         }
-
-        function generateConnections(count) {
-            geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=5);
-            material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading});
-            for (var x = 0; x<count; x++){
+        //call last after all translations
+        function generateConnections(objs) {
+            for (var index = 0; index < (objs.length)-1; index++){
+                geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=5);
+                material = new THREE.MeshLambertMaterial( {color: 0x0000FF, shading: THREE.SmoothShading});
                 connections.push(new THREE.Mesh( geometry, material ));
+                scene.add(connections[index]);
+                var next = index + 1;
+                console.log(next);
+                connections[index].position.set((objs[index].position.x + objs[next].position.x)/2,(objs[index].position.y + objs[next].position.y)/2, objs[index].position.z);
             }
             geometry = null;
             material = null;
         }
+
 
 
         skyLight.position.set(-10,10,20);
@@ -55,18 +60,20 @@
         scene.add(skyLight);
         scene.add(skyLight2);
 
-        generateConnections(4);
-        scene.add(connections[0]);
+
         generateNodes(4);
+
         for(index in nodes) {
             scene.add(nodes[index])
         }
+
 
         nodes[0].translateX(-25);
         nodes[1].translateX(-10);
         nodes[2].translateX(10);
         nodes[3].translateX(25);
-        connections[0].translateY(10);
+
+        generateConnections(nodes);
 
         camera.position.z = 30;
 

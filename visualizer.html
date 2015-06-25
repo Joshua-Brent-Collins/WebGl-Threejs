@@ -103,13 +103,14 @@
 
         generateConnections(nodes);
 
-        camera.position.z = 30;
+        camera.position.z = 45;
 
         function drawScene(){
             for(index in nodes) {
                 nodes[index].rotation.x += 0.05;
                 nodes[index].rotation.y += .025;
             }
+            scene.rotation.y += .015;
             requestAnimationFrame(drawScene);
             renderer.render(scene,camera);
         }

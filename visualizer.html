@@ -39,7 +39,7 @@
         var connections = [];
 
         function generateNodes(count) {
-            geometry = new THREE.DodecahedronGeometry( 2, 0);
+            geometry = new THREE.DodecahedronGeometry( 2, 0 );
             material = new THREE.MeshLambertMaterial( {color: colorSpace.RED, shading: THREE.SmoothShading} );
             for (var x = 0; x<count; x++){
                 nodes.push(new THREE.Mesh( geometry, material ));
@@ -48,21 +48,31 @@
             material = null;
         }
         //call last after all translations
-        function generateConnections(objs) {
+        function generateConnections(objs, isClosed) {
+
+            var deltaX;
+            var deltaY;
+            var distance;
+            var midX;
+            var midY;
+            var theta;
+            var mu;
+
             for (var index = 0; index < (objs.length)-1; index++){
                 var next = index + 1;
-                var deltaX = objs[index].position.x-objs[next].position.x;
-                var deltaY = objs[index].position.y-objs[next].position.y;
-                var distance = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
-                var midX = (objs[index].position.x + objs[next].position.x)/2;
-                var midY = (objs[index].position.y + objs[next].position.y)/2;
+
+                deltaX = objs[index].position.x-objs[next].position.x;
+                deltaY = objs[index].position.y-objs[next].position.y;
+                distance = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
+                midX = (objs[index].position.x + objs[next].position.x)/2;
+                midY = (objs[index].position.y + objs[next].position.y)/2;
 
                 geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=distance);
                 material = new THREE.MeshLambertMaterial( {color: colorSpace.BLUE, shading: THREE.SmoothShading});
                 connections.push(new THREE.Mesh( geometry, material ));
 
-                var theta = Math.acos((objs[index].position.x - midX)/(distance/2));
-                var mu = (3.1415/2) - theta;
+                theta = Math.acos((objs[index].position.x - midX)/(distance/2));
+                mu = (3.1415/2) - theta;
 
                 if(objs[index].position.y >= 0 && objs[index].position.x <=0 || (objs[index].position.y >= 0 && objs[index].position.x >= 0) ) {
                     connections[index].rotation.z -= mu;
@@ -73,6 +83,32 @@
                 connections[index].position.set(midX,midY, objs[index].position.z);
                 scene.add(connections[index]);
             }
+            if(isClosed) {
+
+                deltaX = objs[0].position.x-objs[objs.length-1].position.x;
+                deltaY = objs[0].position.y-objs[objs.length-1].position.y;
+                distance = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
+                midX = (objs[0].position.x + objs[objs.length-1].position.x)/2;
+                midY = (objs[0].position.y + objs[objs.length-1].position.y)/2;
+
+                geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=distance);
+                material = new THREE.MeshLambertMaterial( {color: colorSpace.BLUE, shading: THREE.SmoothShading});
+
+                theta = Math.acos((objs[0].position.x - midX)/(distance/2));
+                mu = (3.1415/2) - theta;
+                connections.push(new THREE.Mesh( geometry, material ));
+                if(objs[0].position.y >= 0 && objs[0].position.x <=0 || (objs[0].position.y >= 0 && objs[0].position.x >= 0) ) {
+                    connections[connections.length-1].rotation.z -= mu;
+                } else {
+                    connections[connections.length-1].rotation.z += mu;
+                }
+                connections[connections.length-1].position.set(midX,midY, objs[0].position.z);
+                scene.add(connections[connections.length-1]);
+            }
+
+
+
+
             geometry = null;
             material = null;
         }
@@ -98,10 +134,10 @@
         nodes[1].translateY(15);
         nodes[2].translateX(10);
         nodes[2].translateY(-10);
-        nodes[3].translateX(-25);
-        nodes[3].translateY(-10);
+        nodes[3].translateX(20);
+        nodes[3].translateY(20);
 
-        generateConnections(nodes);
+        generateConnections(nodes,true);
 
         camera.position.z = 45;
 

@@ -59,6 +59,13 @@
         }
 
     }
+    //Pass this into the material params with the url to the need texture {map:setupTexture("texture/mytexture.gif")}
+    function setupTexture(tUrl) {
+
+        var texture = THREE.ImageUtils.loadTexture(tUrl);
+        texture.anisotropy = renderer.getMaxAnisotropy();
+        return texture;
+    }
 
 
 ////////////////////////////////////////////////////////////
@@ -82,10 +89,10 @@
         }
 
         function generateNodes(count) {
-            geometry = new THREE.DodecahedronGeometry( 2, 0 );
+            geometry = new THREE.SphereGeometry( 2,25,25 );
 
             for (var x = 0; x<count; x++){
-                material = new THREE.MeshLambertMaterial( {color: colorSpace.RED, shading: THREE.SmoothShading} );
+                material = new THREE.MeshLambertMaterial( {map:setupTexture("textures/gumba.png"), shading: THREE.SmoothShading} );
                 nodes.push(new THREE.Mesh( geometry, material ));
             }
             geometry = null;
@@ -127,10 +134,12 @@
         camera.position.z = 45;
 
         function drawScene(){
+/*
             for(index in nodes) {
                 nodes[index].rotation.x += 0.05;
                 nodes[index].rotation.y += .025;
             }
+*/
             scene.rotation.y += .015;
             requestAnimationFrame(drawScene);
             renderer.render(scene,camera);

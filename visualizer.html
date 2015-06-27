@@ -28,7 +28,7 @@
         var skyLight2 = new THREE.PointLight(0x404040,2,0);
         var scene = new THREE.Scene();
         var camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight, 0.1,1000.0);
-        var renderer = new THREE.WebGLRenderer();
+        var renderer = new THREE.WebGLRenderer({antialias:true});
 
         renderer.setSize(window.innerWidth,window.innerHeight);
         document.body.appendChild(renderer.domElement);
@@ -38,10 +38,54 @@
         var nodes = [];
         var connections = [];
 
+
+/////////////////Testing Functions///////////////////////////
+
+        function drawRandomNodes() {
+            for(index in nodes) {
+                nodes[index].translateX(Math.floor((Math.random()*50)-25));
+                nodes[index].translateY(Math.floor((Math.random()*50)-25));
+                nodes[index].translateZ(Math.floor((Math.random()*50)-25));
+                scene.add(nodes[index]);
+            }
+        }
+
+    function drawNodesInACriclre(){
+        for (index in nodes) {
+            nodes[index].translateX(Math.cos(2*Math.PI/nodes.length * (index) )*20);
+            nodes[index].translateY(Math.sin(2*Math.PI/nodes.length * (index) )*20);
+            nodes[index].translateZ(0);
+            scene.add(nodes[index]);
+        }
+
+    }
+
+
+////////////////////////////////////////////////////////////
+
+
+        function createCylinderMesh(x1,y1,z1,x2,y2,z2){
+            var x0 = (x1 + x2) / 2;
+            var y0 = (y1 + y2) / 2;
+            var z0 = (z1 + z2) / 2;
+            var p1 = new THREE.Vector3(x1,y1,z1);
+            var length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
+            material = new THREE.MeshLambertMaterial( {color: colorSpace.BLUE, shading: THREE.SmoothShading} );
+            geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=length);
+            geometry.applyMatrix( new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler().setFromVector3(new THREE.Vector3( Math.PI / 2, Math.PI, 0 ))));
+            var mesh = new THREE.Mesh(geometry,material);
+            mesh.position.set(x0, y0, z0);
+            mesh.lookAt(p1);
+            geometry= null;
+            material = null;
+            return mesh;
+        }
+
         function generateNodes(count) {
             geometry = new THREE.DodecahedronGeometry( 2, 0 );
-            material = new THREE.MeshLambertMaterial( {color: colorSpace.RED, shading: THREE.SmoothShading} );
+
             for (var x = 0; x<count; x++){
+                material = new THREE.MeshLambertMaterial( {color: colorSpace.RED, shading: THREE.SmoothShading} );
                 nodes.push(new THREE.Mesh( geometry, material ));
             }
             geometry = null;
@@ -50,64 +94,17 @@
         //call last after all translations
         function generateConnections(objs, isClosed) {
 
-            var deltaX;
-            var deltaY;
-            var distance;
-            var midX;
-            var midY;
-            var theta;
-            var mu;
 
             for (var index = 0; index < (objs.length)-1; index++){
                 var next = index + 1;
-
-                deltaX = objs[index].position.x-objs[next].position.x;
-                deltaY = objs[index].position.y-objs[next].position.y;
-                distance = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
-                midX = (objs[index].position.x + objs[next].position.x)/2;
-                midY = (objs[index].position.y + objs[next].position.y)/2;
-
-                geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=distance);
-                material = new THREE.MeshLambertMaterial( {color: colorSpace.BLUE, shading: THREE.SmoothShading});
-                connections.push(new THREE.Mesh( geometry, material ));
-
-                theta = Math.acos((objs[index].position.x - midX)/(distance/2));
-                mu = (3.1415/2) - theta;
-
-                if(objs[index].position.y >= 0 && objs[index].position.x <=0 || (objs[index].position.y >= 0 && objs[index].position.x >= 0) ) {
-                    connections[index].rotation.z -= mu;
-                } else {
-                    connections[index].rotation.z += mu;
-                }
-
-                connections[index].position.set(midX,midY, objs[index].position.z);
+                connections.push(new createCylinderMesh(objs[index].position.x,objs[index].position.y,objs[index].position.z,objs[next].position.x,objs[next].position.y,objs[next].position.z));
                 scene.add(connections[index]);
             }
             if(isClosed) {
 
-                deltaX = objs[0].position.x-objs[objs.length-1].position.x;
-                deltaY = objs[0].position.y-objs[objs.length-1].position.y;
-                distance = Math.sqrt(Math.pow(deltaX,2) + Math.pow(deltaY,2));
-                midX = (objs[0].position.x + objs[objs.length-1].position.x)/2;
-                midY = (objs[0].position.y + objs[objs.length-1].position.y)/2;
-
-                geometry = new THREE.CylinderGeometry(radiusTop=.25,radiusBottom=.25,height=distance);
-                material = new THREE.MeshLambertMaterial( {color: colorSpace.BLUE, shading: THREE.SmoothShading});
-
-                theta = Math.acos((objs[0].position.x - midX)/(distance/2));
-                mu = (3.1415/2) - theta;
-                connections.push(new THREE.Mesh( geometry, material ));
-                if(objs[0].position.y >= 0 && objs[0].position.x <=0 || (objs[0].position.y >= 0 && objs[0].position.x >= 0) ) {
-                    connections[connections.length-1].rotation.z -= mu;
-                } else {
-                    connections[connections.length-1].rotation.z += mu;
-                }
-                connections[connections.length-1].position.set(midX,midY, objs[0].position.z);
+                connections.push(new createCylinderMesh(objs[0].position.x,objs[0].position.y,objs[0].position.z,objs[objs.length-1].position.x,objs[objs.length-1].position.y,objs[objs.length-1].position.z));
                 scene.add(connections[connections.length-1]);
             }
-
-
-
 
             geometry = null;
             material = null;
@@ -120,22 +117,10 @@
         scene.add(skyLight);
         scene.add(skyLight2);
 
+        generateNodes(15);
 
-        generateNodes(4);
+        drawNodesInACriclre();
 
-        for(index in nodes) {
-            scene.add(nodes[index])
-        }
-
-
-        nodes[0].translateX(25);
-        nodes[0].translateY(-10);
-        nodes[1].translateX(-10);
-        nodes[1].translateY(15);
-        nodes[2].translateX(10);
-        nodes[2].translateY(-10);
-        nodes[3].translateX(20);
-        nodes[3].translateY(20);
 
         generateConnections(nodes,true);
 

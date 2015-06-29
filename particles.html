@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Visualizer</title>
+        <style>
+            body{margin: 0;}
+            <canvas width=100% height=100%></canvas>
+        </style>
+    </head>
+    <body>
+    <script src=three.min.js></script>
+    <script type="text/javascript">
+
+      colorSpace = {
+
+          BLUE : 0x0000FF,
+          RED : 0xFF0000,
+          YELLOW: 0xFFFF00,
+          GREEN: 0x00FF00
+
+      }
+
+
+
+        var ambLight = new THREE.AmbientLight(0x404040);
+        var skyLight = new THREE.PointLight(0x404040,2,0);
+        var skyLight2 = new THREE.PointLight(0x404040,2,0);
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight, 0.1,1000.0);
+        var renderer = new THREE.WebGLRenderer({antialias:true});
+
+        renderer.setSize(window.innerWidth,window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        var geometry = null;
+        var material = null;
+        var nodes = [];
+        var connections = [];
+
+
+/////////////////Testing Functions///////////////////////////
+
+        function drawRandomNodes() {
+            for(index in nodes) {
+                nodes[index].translateX(Math.floor((Math.random()*50)-25));
+                nodes[index].translateY(Math.floor((Math.random()*50)-25));
+                nodes[index].translateZ(Math.floor((Math.random()*50)-25));
+                scene.add(nodes[index]);
+            }
+        }
+
+    function drawNodesInACriclre(){
+        for (index in nodes) {
+            nodes[index].translateX(Math.cos(2*Math.PI/nodes.length * (index) )*20);
+            nodes[index].translateY(Math.sin(2*Math.PI/nodes.length * (index) )*20);
+            nodes[index].translateZ(0);
+            scene.add(nodes[index]);
+        }
+
+    }
+    //Pass this into the material params with the url to the need texture {map:setupTexture("texture/mytexture.gif")}
+    function setupTexture(tUrl) {
+
+        var texture = THREE.ImageUtils.loadTexture(tUrl);
+        texture.anisotropy = renderer.getMaxAnisotropy();
+        return texture;
+    }
+
+
+////////////////////////////////////////////////////////////
+
+
+        function createCylinderMesh(x1,y1,z1,x2,y2,z2){
+            var x0 = (x1 + x2) / 2;
+            var y0 = (y1 + y2) / 2;
+            var z0 = (z1 + z2) / 2;
+            var p1 = new THREE.Vector3(x1,y1,z1);
+            var length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
+            material = new THREE.MeshLambertMaterial( {color: colorSpace.BLUE, shading: THREE.SmoothShading} );
+            geometry = new THREE.CylinderGeometry(radiusTop=.025,radiusBottom=.025,height=length);
+            geometry.applyMatrix( new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler().setFromVector3(new THREE.Vector3( Math.PI / 2, Math.PI, 0 ))));
+            var mesh = new THREE.Mesh(geometry,material);
+            mesh.position.set(x0, y0, z0);
+            mesh.lookAt(p1);
+            geometry= null;
+            material = null;
+            return mesh;
+        }
+
+        function generateNodes(count) {
+            geometry = new THREE.SphereGeometry( .25,25,25 );
+
+            for (var x = 0; x<count; x++){
+                //material = new THREE.MeshLambertMaterial( {map:setupTexture("textures/gumba.png"), shading: THREE.SmoothShading} );
+                material = new THREE.PointCloudMaterial( {color: colorSpace.BLUE } );
+                nodes.push(new THREE.Mesh( geometry, material ));
+            }
+            geometry = null;
+            material = null;
+        }
+        //call last after all translations
+        function generateConnections(objs, isClosed) {
+
+
+            for (var index = 0; index < (objs.length)-1; index++){
+                var next = index + 1;
+                connections.push(new createCylinderMesh(objs[index].position.x,objs[index].position.y,objs[index].position.z,objs[next].position.x,objs[next].position.y,objs[next].position.z));
+                scene.add(connections[index]);
+            }
+            if(isClosed) {
+
+                connections.push(new createCylinderMesh(objs[0].position.x,objs[0].position.y,objs[0].position.z,objs[objs.length-1].position.x,objs[objs.length-1].position.y,objs[objs.length-1].position.z));
+                scene.add(connections[connections.length-1]);
+            }
+
+            geometry = null;
+            material = null;
+        }
+
+        skyLight.position.set(-10,10,20);
+        skyLight2.position.set(10,10,20);
+
+        scene.add(ambLight);
+        scene.add(skyLight);
+        scene.add(skyLight2);
+
+        generateNodes(15);
+
+        drawNodesInACriclre();
+
+
+        generateConnections(nodes,true);
+
+        camera.position.z = 45;
+
+        function drawScene(){
+/*
+            for(index in nodes) {
+                nodes[index].rotation.x += 0.05;
+                nodes[index].rotation.y += .025;
+            }
+*/
+            scene.rotation.y += .015;
+            requestAnimationFrame(drawScene);
+            renderer.render(scene,camera);
+        }
+        drawScene();
+    </script>
+    </body>
+</html>

@@ -12,14 +12,15 @@
     <script src=three.min.js></script>
     <script type="text/javascript">
 
-      colorSpace = {
+    colorSpace = {
 
-          BLUE : 0x0000FF,
-          RED : 0xFF0000,
-          YELLOW: 0xFFFF00,
-          GREEN: 0x00FF00
+        BLUE : 0x0000FF,
+        RED : 0xFF0000,
+        YELLOW: 0xFFFF00,
+        GREEN: 0x00FF00,
+        WHITE: 0XFFFFFF
 
-      }
+    }
 
 
 
@@ -77,8 +78,8 @@
             var z0 = (z1 + z2) / 2;
             var p1 = new THREE.Vector3(x1,y1,z1);
             var length = Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2) + (z1 - z2) * (z1 - z2));
-            material = new THREE.MeshLambertMaterial( {color: colorSpace.BLUE, shading: THREE.SmoothShading} );
-            geometry = new THREE.CylinderGeometry(radiusTop=.025,radiusBottom=.025,height=length);
+            material = new THREE.MeshLambertMaterial( {color: colorSpace.WHITE, shading: THREE.SmoothShading} );
+            geometry = new THREE.CylinderGeometry(radiusTop=.035,radiusBottom=.035,height=length);
             geometry.applyMatrix( new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler().setFromVector3(new THREE.Vector3( Math.PI / 2, Math.PI, 0 ))));
             var mesh = new THREE.Mesh(geometry,material);
             mesh.position.set(x0, y0, z0);

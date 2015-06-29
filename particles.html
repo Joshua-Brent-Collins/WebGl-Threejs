@@ -18,7 +18,8 @@
         RED : 0xFF0000,
         YELLOW: 0xFFFF00,
         GREEN: 0x00FF00,
-        WHITE: 0XFFFFFF
+        WHITE: 0xFFFFFF,
+        LIGHT_BLUE: 0x66CCFF
 
     }
 
@@ -33,6 +34,7 @@
 
         renderer.setSize(window.innerWidth,window.innerHeight);
         document.body.appendChild(renderer.domElement);
+        scene.fog = new THREE.FogExp2(colorSpace.LIGHT_BLUE,.015);
 
         var geometry = null;
         var material = null;

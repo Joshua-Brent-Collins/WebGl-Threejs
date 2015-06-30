@@ -39,6 +39,7 @@
         var geometry = null;
         var material = null;
         var nodes = [];
+        var glow = [];
         var connections = [];
 
 
@@ -49,7 +50,11 @@
                 nodes[index].translateX(Math.floor((Math.random()*50)-25));
                 nodes[index].translateY(Math.floor((Math.random()*50)-25));
                 nodes[index].translateZ(Math.floor((Math.random()*50)-25));
+                glow[index].translateX(Math.cos(2*Math.PI/nodes.length * (index) )*20);
+                glow[index].translateY(Math.sin(2*Math.PI/nodes.length * (index) )*20);
+                glow[index].translateZ(0);
                 scene.add(nodes[index]);
+                scene.add(glow[index]);
             }
         }
 
@@ -58,7 +63,11 @@
             nodes[index].translateX(Math.cos(2*Math.PI/nodes.length * (index) )*20);
             nodes[index].translateY(Math.sin(2*Math.PI/nodes.length * (index) )*20);
             nodes[index].translateZ(0);
+            glow[index].translateX(Math.cos(2*Math.PI/nodes.length * (index) )*20);
+            glow[index].translateY(Math.sin(2*Math.PI/nodes.length * (index) )*20);
+            glow[index].translateZ(0);
             scene.add(nodes[index]);
+            scene.add(glow[index]);
         }
 
     }
@@ -92,12 +101,15 @@
         }
 
         function generateNodes(count) {
-            geometry = new THREE.SphereGeometry( .25,25,25 );
+            geometry = new THREE.SphereGeometry( .18,25,25 );
 
             for (var x = 0; x<count; x++){
-                //material = new THREE.MeshLambertMaterial( {map:setupTexture("textures/gumba.png"), shading: THREE.SmoothShading} );
+                material = new THREE.SpriteMaterial( {map:setupTexture("textures/small_particle.png"), color:colorSpace.BLUE } );
+                glow.push(new THREE.Sprite( material ));
+                glow[x].material.blending = THREE.AdditiveBlending;
+                glow[x].scale.set(3.0,3.0,1);
                 material = new THREE.PointCloudMaterial( {color: colorSpace.BLUE } );
-                nodes.push(new THREE.Mesh( geometry, material ));
+                nodes.push(new THREE.Mesh( geometry,material ));
             }
             geometry = null;
             material = null;

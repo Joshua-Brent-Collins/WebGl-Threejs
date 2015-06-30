@@ -50,6 +50,21 @@
 
 /////////////////Testing Functions///////////////////////////
 
+    function toggleConnections() {
+
+        for(index in connections) {
+
+            if(connections[index].visible === true) {
+                connections[index].visible = false
+                console.log("0");
+            } else {
+                connections[index].visible = true
+                console.log("1");
+            }
+        }
+    }
+
+
 
     function addGlobalGlow(geometry) {
 
@@ -174,7 +189,6 @@
             geometry = null;
             material = null;
         }
-
 
         generateNodes(1000);
 

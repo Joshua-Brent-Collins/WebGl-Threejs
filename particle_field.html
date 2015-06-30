@@ -35,6 +35,12 @@
         document.body.appendChild(renderer.domElement);
         scene.fog = new THREE.FogExp2(colorSpace.WHITE,.03);
 
+        skyLight.position.set(-10,10,20);
+        skyLight2.position.set(10,10,20);
+        scene.add(ambLight);
+        scene.add(skyLight);
+        scene.add(skyLight2);
+
         var geometry = null;
         var material = null;
         var nodes = [];
@@ -43,6 +49,24 @@
 
 
 /////////////////Testing Functions///////////////////////////
+
+
+    function addGlobalGlow(geometry) {
+
+        material = new THREE.SpriteMaterial( {map:setupTexture("textures/small_particle.png"), color:colorSpace.LIGHT_BLUE } );
+        var gGlow = new THREE.Sprite( material );
+        gGlow.material.blending = THREE.AdditiveBlending;
+        if(geometry === "disk") {
+            gGlow.scale.set(450,125,1);
+        }
+        else {
+            gGlow.scale.set(500,500,1);
+        }
+
+        scene.add(gGlow);
+
+    }
+
 
     function drawRandomNodes() {
         for(index in nodes) {
@@ -151,18 +175,13 @@
             material = null;
         }
 
-        skyLight.position.set(-10,10,20);
-        skyLight2.position.set(10,10,20);
-
-        scene.add(ambLight);
-        scene.add(skyLight);
-        scene.add(skyLight2);
 
         generateNodes(1000);
 
         //drawNodesInACriclre();
         //drawRandomNodes();
         drawNodesInDisk();
+        addGlobalGlow("disk");
 
          //Use with caution when nodes generated is greater than 100
         //generateConnections(nodes,true);

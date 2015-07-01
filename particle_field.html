@@ -131,7 +131,7 @@
     //Pass this into the material params with the url to the need texture {map:setupTexture("texture/mytexture.gif")}
     function setupTexture(tUrl) {
 
-        var texture = THREE.ImageUtils.loadTexture(tUrl);
+        var texture = new THREE.ImageUtils.loadTexture(tUrl);
         texture.anisotropy = renderer.getMaxAnisotropy();
         return texture;
     }
